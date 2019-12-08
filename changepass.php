@@ -5,21 +5,7 @@ if(!isset($_SESSION['REV_AUTH'])){
 }
 include_once("connect.php");
 
-/*$old_pass=$_REQUEST['password1'];
-$new_pass=$_REQUEST['password'];
-
-$Data=explode("|",$_SESSION['REV_AUTH']);
-$query="UPDATE USER_MASTER set PASSWORD='$new_pass' where ID=$Data[1] AND PASSWORD='$old_pass'";//echo $query;
-$sth = mysqli_query($con,$query);
-if(mysqli_affected_rows($con)>0){
-	echo "success";
-}*/
-//echo $query;
-?>
-
-<?php
 error_reporting(E_ALL);
-// error_reporting(0);
 $error = "";
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	if (isset($_POST['flg']) && $_POST['old_password'] !="" && $_POST['new_password'] !="" && $_POST['confirm_password'] !="") {
@@ -271,4 +257,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	}
 </script>
 </html>
-?>
