@@ -1,0 +1,253 @@
+<?php
+if(!empty($_POST['selected_image_url'])){
+	define('UPLOAD_DIR', 'uploads/product/');
+	$image_parts = explode(";base64,", $_POST['selected_image_url']);
+	$image_mime_type = explode("image/", $image_parts[0]);
+	$image_type = $image_mime_type[1];
+	$image_base64 = base64_decode($image_parts[1]);
+	$file_name = date("dmY_").rand()."_video_thumbnail".".png";
+	$file_path = UPLOAD_DIR . $file_name;
+	$upload_image = file_put_contents($file_path, $image_base64);
+	if ($upload_image) {
+		$picture = $file_name;
+		$this->session->set_flashdata('msg','Image Successfully Uploaded Thank You!!!.');
+		redirect('Entube_channel/entube_studio');
+	}
+	else{
+		$this->session->set_flashdata('msg','Image Uploaded Failed Please Try Again? Thank You!!!.');
+		redirect('Entube_channel/entube_studio');
+	}
+}
+else{
+	$this->session->set_flashdata('msg','Image file does not exist. Please Try Again? Thank You!!!.');
+	redirect('Entube_channel/entube_studio');
+}
+?>
+<!DOCTYPE html>
+<html lang="en"> 
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale = 1.0, maximum-scale = 1.0, user-scalable=no">
+		<title>Create Video Thumbnail</title>
+		<style type="text/css">
+			.selected-thumb{
+				border: solid 3px #f4575c !important;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="video_container" style="text-align: center;">
+			<h3>Choose Video</h3>
+			<input type="file" id="upload_file" accept="video/mp4" onchange="upload_video_file();" />
+
+			<video id="main_video_1" controls style="display: none; width: 400px; margin: 0 auto;">
+				<source type="video/mp4">
+			</video>
+
+			<video id="main_video_2" controls style="display: none; width: 400px; margin: 0 auto;">
+				<source type="video/mp4">
+			</video>
+
+			<video id="main_video_3" controls style="display: none; width: 400px; margin: 0 auto;">
+				<source type="video/mp4">
+			</video>
+
+			<video id="main_video_4" controls style="display: none; width: 400px; margin: 0 auto;">
+				<source type="video/mp4">
+			</video>
+			<div>
+	            <h3>Create Video Thumbnail</h3>
+	            <img id="video_thumbnail_1" class="remove_selected_thumb" style="width: 400px; height: 200px; cursor: pointer;" onclick="select_image_1()" />
+	            <img id="video_thumbnail_2" class="remove_selected_thumb" style="width: 400px; height: 200px; cursor: pointer;" onclick="select_image_2()" />
+	            <img id="video_thumbnail_3" class="remove_selected_thumb" style="width: 400px; height: 200px; cursor: pointer;" onclick="select_image_3()" />
+	            <img id="video_thumbnail_4" class="remove_selected_thumb" style="width: 400px; height: 200px; cursor: pointer;" onclick="select_image_4()" />
+        	</div><br>
+        	<div>
+        		<textarea class="input-textarea" id="selected_image_url" name="selected_image_url" rows="4" cols="220"></textarea>
+        	</div><br>
+        </div>
+        <div>
+        	<h3>Choose Image Thumbnail</h3>
+        	<input id="upload_image" type="file" accept="image/*" onchange="upload_image_file();" />
+        	<h3>Origal Image <span style="margin-left: 270px;">Compress Image</span></h3>
+        	<img id="original_image" style="width: 400px; height: 200px;" />
+        	<img id="compress_image" style="width: 400px; height: 200px;" />
+        	<br><br><br>
+        </div>
+		
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<!-- GENERATE VIDEO THUMBNAUL IMAGE JAVASCRIPT CODE -->
+	    <script type="text/javascript">
+	        var video_obj_1 = document.getElementById("main_video_1");
+	        var canvas_1 = document.createElement("canvas");
+	        var cts_img_1 = canvas_1.getContext("2d");
+
+	        var video_obj_2 = document.getElementById("main_video_2");
+	        var canvas_2 = document.createElement("canvas");
+	        var cts_img_2 = canvas_2.getContext("2d");
+
+	        var video_obj_3 = document.getElementById("main_video_3");
+	        var canvas_3 = document.createElement("canvas");
+	        var cts_img_3 = canvas_3.getContext("2d");
+
+	        var video_obj_4 = document.getElementById("main_video_4");
+	        var canvas_4 = document.createElement("canvas");
+	        var cts_img_4 = canvas_4.getContext("2d");
+
+	        image_width = 400;
+	        image_height = 200;
+
+	        function upload_video_file(){
+	            $("#video_thumbnail_1").addClass("selected-thumb");
+	            $("#video_thumbnail_2").removeClass("selected-thumb");
+	            $("#video_thumbnail_3").removeClass("selected-thumb");
+	            $("#video_thumbnail_4").removeClass("selected-thumb");
+
+	            video_image_1();
+	            video_image_2();
+	            video_image_3();
+	            video_image_4();
+	        }
+
+	        function video_image_1(){
+	            video_obj_1.load();
+	            video_obj_1.style.display = 'block';
+	            document.querySelector("#main_video_1 source").setAttribute('src', URL.createObjectURL(document.querySelector("#upload_file").files[0]));
+	            canvas_1.width = image_width;
+	            canvas_1.height = image_height;
+	            video_obj_1.onloadedmetadata = function() {
+	                var video_duration_1 = video_obj_1.duration;
+	                video_duration_1 = (video_duration_1 * 25)/100;
+	                video_obj_1.currentTime = video_duration_1;
+	                setTimeout(function(){
+	                    cts_img_1.drawImage(video_obj_1, 0, 0, video_obj_1.videoWidth, video_obj_1.videoHeight, 0, 0, canvas_1.width, canvas_1.height);
+	                    document.getElementById("video_thumbnail_1").src = canvas_1.toDataURL();
+	                    document.getElementById("compress_image").src = canvas_1.toDataURL();
+	                    document.getElementById('selected_image_url').value = canvas_1.toDataURL();
+	                }, 500);
+	            }
+	        }
+
+	        function video_image_2(){
+	            video_obj_2.load();
+	            document.querySelector("#main_video_2 source").setAttribute('src', URL.createObjectURL(document.querySelector("#upload_file").files[0]));
+	            canvas_2.width = image_width;
+	            canvas_2.height = image_height;
+	            video_obj_2.onloadedmetadata = function() {
+	                var video_duration_2 = video_obj_2.duration;
+	                video_duration_2 = (video_duration_2 * 50)/100;
+	                video_obj_2.currentTime = video_duration_2;
+	                setTimeout(function(){
+	                    cts_img_2.drawImage(video_obj_2, 0, 0, video_obj_2.videoWidth, video_obj_2.videoHeight, 0, 0, canvas_2.width, canvas_2.height);
+	                    document.getElementById("video_thumbnail_2").src = canvas_2.toDataURL();
+	                }, 500);
+	            }
+	        }
+
+	        function video_image_3(){
+	            video_obj_3.load();
+	            document.querySelector("#main_video_3 source").setAttribute('src', URL.createObjectURL(document.querySelector("#upload_file").files[0]));
+	            canvas_3.width = image_width;
+	            canvas_3.height = image_height;
+	            video_obj_3.onloadedmetadata = function() {
+	                var video_duration_3 = video_obj_3.duration;
+	                video_duration_3 = (video_duration_3 * 75)/100;
+	                video_obj_3.currentTime = video_duration_3;
+	                setTimeout(function(){
+	                    cts_img_3.drawImage(video_obj_3, 0, 0, video_obj_3.videoWidth, video_obj_3.videoHeight, 0, 0, canvas_3.width, canvas_3.height);
+	                    document.getElementById("video_thumbnail_3").src = canvas_3.toDataURL();
+	                }, 500);
+	            }
+	        }
+
+	        function video_image_4(){
+	            video_obj_4.load();
+	            document.querySelector("#main_video_4 source").setAttribute('src', URL.createObjectURL(document.querySelector("#upload_file").files[0]));
+	            canvas_4.width = image_width;
+	            canvas_4.height = image_height;
+	            video_obj_4.onloadedmetadata = function() {
+	                var video_duration_4 = video_obj_4.duration;
+	                video_duration_4 = (video_duration_4 * 95)/100;
+	                video_obj_4.currentTime = video_duration_4;
+	                setTimeout(function(){
+	                    cts_img_4.drawImage(video_obj_4, 0, 0, video_obj_4.videoWidth, video_obj_4.videoHeight, 0, 0, canvas_4.width, canvas_4.height);
+	                    document.getElementById("video_thumbnail_4").src = canvas_4.toDataURL();
+	                }, 500);
+	            }
+	        }
+
+	        function select_image_1(){
+	            document.getElementById("compress_image").src = document.getElementById('video_thumbnail_1').src;
+	            document.getElementById('selected_image_url').value = document.getElementById('video_thumbnail_1').src;
+	            $("#video_thumbnail_1").addClass("selected-thumb");
+	            $("#video_thumbnail_2").removeClass("selected-thumb");
+	            $("#video_thumbnail_3").removeClass("selected-thumb");
+	            $("#video_thumbnail_4").removeClass("selected-thumb");
+	        }
+
+	        function select_image_2(){
+	            document.getElementById("compress_image").src = document.getElementById('video_thumbnail_2').src;
+	            document.getElementById('selected_image_url').value = document.getElementById('video_thumbnail_2').src;
+	            $("#video_thumbnail_1").removeClass("selected-thumb");
+	            $("#video_thumbnail_2").addClass("selected-thumb");
+	            $("#video_thumbnail_3").removeClass("selected-thumb");
+	            $("#video_thumbnail_4").removeClass("selected-thumb");
+	        }
+
+	        function select_image_3(){
+	            document.getElementById("compress_image").src = document.getElementById('video_thumbnail_3').src;
+	            document.getElementById('selected_image_url').value = document.getElementById('video_thumbnail_3').src;
+	            $("#video_thumbnail_1").removeClass("selected-thumb");
+	            $("#video_thumbnail_2").removeClass("selected-thumb");
+	            $("#video_thumbnail_3").addClass("selected-thumb");
+	            $("#video_thumbnail_4").removeClass("selected-thumb");
+	        }
+
+	        function select_image_4(){
+	            document.getElementById("compress_image").src = document.getElementById('video_thumbnail_4').src;
+	            document.getElementById('selected_image_url').value = document.getElementById('video_thumbnail_4').src;
+	            $("#video_thumbnail_1").removeClass("selected-thumb");
+	            $("#video_thumbnail_2").removeClass("selected-thumb");
+	            $("#video_thumbnail_3").removeClass("selected-thumb");
+	            $("#video_thumbnail_4").addClass("selected-thumb");
+	        }
+	    </script>
+
+	    <!-- COMPRESS IMAGE JAVASCRIPT CODE -->
+		<script type="text/javascript">
+			function upload_image_file() {
+		        var fileReader = new FileReader();
+		        var filterType = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
+
+		        var uploadImage = document.getElementById("upload_image");
+	            if (uploadImage.files.length === 0) {
+	                return false; 
+	            }
+
+	            var uploadFile = document.getElementById("upload_image").files[0];
+	            if (!filterType.test(uploadFile.type)) {
+	                alert("Please select a valid image.");
+	                document.getElementById("upload_image").value = "";
+	                document.getElementById("original_image").src = "";
+	                document.getElementById("compress_image").src = "";
+	                return false;
+	            }
+	            fileReader.readAsDataURL(uploadFile);
+
+		        fileReader.onload = function (event) {
+		            var image = new Image();
+		            image.onload=function(){
+		                document.getElementById("original_image").src = image.src;
+		                var canvas=document.createElement("canvas");
+		                var context=canvas.getContext("2d");
+		                canvas.width = 400;
+		                canvas.height = 200;
+		                context.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height);
+		                document.getElementById("compress_image").src = canvas.toDataURL();
+		            }
+		            image.src=event.target.result;
+		        }
+	        }
+	    </script>
+	</body>
+</html>
