@@ -1,0 +1,57 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Canvas Image Resize</title>
+</head>
+<body>
+    <div>
+        <h2>Canvas Image Resize</h2>
+        <h3>Choose Image Thumbnail</h3>
+        <input name="upload_image" id="upload_image" type="file" onchange="upload_image_file();" /><br><br>
+        <h3>Origal Image <span style="margin-left: 270px;">Compress Image</span></h3>
+        <img id="original_image" style="width: 400px; height: 200px; float: left;" />
+        <div id="compress_image" style="width: 400px; height: 200px; float: left; margin-left: 5px; display: flex; border: 1px solid #b2b2b2;"></div>
+    </div>
+
+    <script type="text/javascript">
+        function upload_image_file(){
+            var filterType = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
+
+            var uploadFile = document.getElementById("upload_image").files[0];
+            if (!filterType.test(uploadFile.type)) {
+                alert("Please select a valid image.");
+                document.getElementById("upload_image").value = "";
+                document.getElementById("original_image").src = "";
+                $('#compress_image').empty();
+                return false;
+            }
+            else{
+                var org_image = document.getElementById('original_image');
+                org_image.src = URL.createObjectURL(uploadFile);
+                $('#compress_image').empty();
+                    // CANVAS RESIZING
+                    canvasResize(uploadFile, {
+                        width: 400,
+                        height: 0,
+                        crop: false,
+                        quality: 80,
+                        rotate: 0,
+                        callback: function(data, width, height) {
+                            var img = new Image();
+                            img.onload = function() {
+                                $(this).appendTo('#compress_image');
+                            };
+                            $(img).attr('src', data);
+                        }
+                    });
+                }
+            }
+        </script>
+        <script src="zepto.min.js"></script>
+        <script src="binaryajax.js"></script>
+        <script src="exif.js"></script>
+        <script src="canvasResize.js"></script>
+    </body>
+    </html>
+
