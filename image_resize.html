@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <title>Image Resize</title>
+</head>
+<body>
+    <form name="uploadForm">
+        <div>
+            <h2>Image Resize</h2>
+            <h3>Choose Image Thumbnail</h3>
+            <input id="upload_image" type="file" accept="image/*" onchange="upload_image_file();" /><br><br>
+            <h3>Origal Image <span style="margin-left: 270px;">Compress Image</span></h3>
+            <img id="original_image" style="width: 400px; height: 200px;" />
+            <img id="compress_image" style="width: 400px; height: 200px;" />
+        </div>
+    </form>
+    <!-- COMPRESS IMAGE JAVASCRIPT CODE -->
+    <script type="text/javascript">
+        function upload_image_file() {
+            var fileReader = new FileReader();
+            var filterType = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
+
+            var uploadImage = document.getElementById("upload_image");
+            if (uploadImage.files.length === 0) {
+                return false; 
+            }
+
+            var uploadFile = document.getElementById("upload_image").files[0];
+            if (!filterType.test(uploadFile.type)) {
+                alert("Please select a valid image.");
+                document.getElementById("upload_image").value = "";
+                document.getElementById("original_image").src = "";
+                document.getElementById("compress_image").src = "";
+                return false;
+            }
+            fileReader.readAsDataURL(uploadFile);
+
+            fileReader.onload = function (event) {
+                var image = new Image();
+                image.onload=function(){
+                    document.getElementById("original_image").src = image.src;
+                    var canvas=document.createElement("canvas");
+                    var context=canvas.getContext("2d");
+                    canvas.width = 400;
+                    canvas.height = 200;
+                    context.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height);
+                    document.getElementById("compress_image").src = canvas.toDataURL();
+                }
+                image.src=event.target.result;
+            }
+        }
+    </script>
+</body>
+</html>
+
